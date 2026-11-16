@@ -43,3 +43,15 @@ curl -X POST localhost:8080/api/orders/<orderId>/payment-callback -H 'X-Callback
 - Lua 原子完成预扣、买家去重与写入 Redis Stream。转发器持有 Redisson 锁，先重试待确认记录，RocketMQ 同步发送成功后才 ACK；消费者在数据库事务中先插入唯一订单再条件扣库存。重复投递依靠订单主键和唯一约束幂等。消息发送与确认之间的崩溃可能造成重复投递，但不会重复扣减数据库库存。
 - 超时关单与支付只允许从 `PENDING` 条件更新。关单事务同时回补数据库库存、写入回补任务；后台 Lua 脚本按订单 ID 幂等回补 Redis。每人每券终身限一单，关单后不可重新购买同一券。
 - 当前是教学/项目骨架，尚未实现短信、真实支付、后台管理、部署监控、死信人工处理、完整对账或集群级容灾；高并发与真实服务集成需要部署环境压测。转发或消费持续失败时，必须监控 Stream pending、RocketMQ 重试/死信以及库存回补表并人工处理。
+
+## SKU 选品前端
+
+前端位于 `frontend/`，使用 Vue 3、TypeScript、Vite 和 Element Plus（Vue 3 版本的 Element UI）。需要 Node.js 20 或更高版本。
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+访问终端显示的本地地址。页面提供 SKU 查询、价格范围筛选、表格分页和批量选择；当前后端没有 SKU 或选品池接口，因此使用示例数据，选品操作仅展示演示提示，不会保存。生产构建使用 `npm run build`。
