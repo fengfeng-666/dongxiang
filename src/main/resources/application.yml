@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: dongxiang
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/dongxiang?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC}
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:root}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+rocketmq:
+  name-server: ${ROCKETMQ_NAME_SERVER:localhost:9876}
+  producer:
+    group: dongxiang-producer
+    send-message-timeout: 3000
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+server:
+  port: ${PORT:8080}
+app:
+  expose-dev-code: ${EXPOSE_DEV_CODE:false}

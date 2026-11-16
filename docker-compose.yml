@@ -1,0 +1,30 @@
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: dongxiang
+      TZ: UTC
+    ports: ["3306:3306"]
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+  redis:
+    image: redis:7.2
+    command: ["redis-server", "--appendonly", "yes"]
+    ports: ["6379:6379"]
+    volumes: ["redis-data:/data"]
+  namesrv:
+    image: apache/rocketmq:5.3.1
+    command: sh mqnamesrv
+    ports: ["9876:9876"]
+  broker:
+    image: apache/rocketmq:5.3.1
+    depends_on: [namesrv]
+    command: sh mqbroker -n namesrv:9876 -c /home/rocketmq/broker.conf
+    ports: ["10909:10909", "10911:10911"]
+    volumes: ["./docker/broker.conf:/home/rocketmq/broker.conf:ro", "rocketmq-data:/home/rocketmq/store"]
+volumes:
+  mysql-data:
+  redis-data:
+  rocketmq-data:
